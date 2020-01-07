@@ -12,26 +12,27 @@
 	
 	function fn_onload()
 	{
-		JsBarcode("#code128A", "1D40", {format: "CODE128A"});
+		//바코드생성
+		JsBarcode("#code128A", '<%=request.getAttribute("dlvClsfCd") %>', {format: "CODE128A"});
 		JsBarcode("#code128B", "Hi!", {format: "CODE128B", displayValue: false});
 		JsBarcode("#code128C", "608393980711", {format: "CODE128C"});
 		printPage();
 	}
 	
 	
-	function printPage()
+	function printPage() 
 	{
 	
 		 //무료기능  
-		 factory.printing.header = "";   //머릿말
-		 factory.printing.footer = "";   //꼬릿말
+		 factory.printing.header = "z";   //머릿말
+		 factory.printing.footer = "d";   //꼬릿말
 		 factory.printing.portrait = false;  //false-가로, true-세로
 		 factory.printing.topMargin = 3.0;  //상 여백 설정
 		 factory.printing.leftMargin = 1.0;  //좌 여백 설정
 		 factory.printing.rightMargin = 1.0;  //우 여백 설정
 		 factory.printing.bottomMargin = 1.0;  //하 여백 설정
 		 //미리보기실행
-		 //factory.printing.Preview();
+		 factory.printing.Preview();
 		 //factory.printing.Print(true);   //인쇄, 다이얼로그 창 등장 true, false
 	
 		 //웹브라우져 닫기
@@ -59,7 +60,11 @@
 	<svg id="code128B"></svg>2
 	<svg id="code128C"></svg>3
 
-	<%=request.getAttribute("param1") %>
-
+	<br><br>
+	
+	<div><%=request.getAttribute("dlvrNumb") %></div>
+	<div><%=request.getAttribute("prtDate") %></div>
+	<div><%=request.getAttribute("dlvClsfCd") %></div>
+	<div><%=request.getAttribute("INVOICE_INFO") %></div>
 </body>
 </html>
