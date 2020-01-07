@@ -31,7 +31,7 @@
 		 factory.printing.rightMargin = 1.0;  //우 여백 설정
 		 factory.printing.bottomMargin = 1.0;  //하 여백 설정
 		 //미리보기실행
-		 factory.printing.Preview();
+		 //factory.printing.Preview();
 		 //factory.printing.Print(true);   //인쇄, 다이얼로그 창 등장 true, false
 	
 		 //웹브라우져 닫기
@@ -58,6 +58,8 @@
 	<svg id="code128A"></svg>1
 	<svg id="code128B"></svg>2
 	<svg id="code128C"></svg>3
-zz
+
+	<%=request.getAttribute("param1") %>
+
 </body>
 </html>
