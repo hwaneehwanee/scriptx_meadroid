@@ -10,7 +10,7 @@
 <head>
 <meta charset="UTF-8">
 <title>인쇄 테스트</title>
-
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="./js/jsBarcode.code128.min.js"></script>
 <style>
 	#code128A{
@@ -27,6 +27,10 @@
 	#code128C{
 		width: 145px !important;
 		height: 75px !important;
+	}
+	
+	svg > rect {
+		display: none;
 	}
 	
 </style>
@@ -67,10 +71,38 @@
 				format: "CODE128C", 					//생성형식
 				width: 3,
 				height: 100,
-				fontOptions: "bold"
+				fontOptions: "bold",
+				fontSize: 25
 			}	
 		);
 		
+		
+		
+		//상품정보 overflow 체크.
+		if ($('#divInner').height() >  $('#divContainer').height()) {
+		    //console.log("OVERFLOW!!");
+		    
+		    var strText = $('#divInner').text();
+		    var str1 = strText.substring(0,(strText.length/2));
+		    var str2 = strText.substring((strText.length/2));
+		    
+		  	//page1에 내용1 적용
+		    $("#page1 #divInner").html(str1);
+		    
+		    //page1의 내용 page2에 복사
+		    $("#page1 #page_content").clone().appendTo("#page2");
+		    
+		    //page2에 내용2 적용
+		    $("#page2 #divInner").html(str2);
+		}else{
+			
+			//2페이지 출력 태그스타일 제거
+			$('#nextPageStyleTag').remove();
+			
+		}
+		
+		
+		//출력
 		printPage();
 	}
 	
@@ -79,10 +111,10 @@
 	{
 	
 		 //무료기능  
-		 factory.printing.header = "z";   //머릿말
-		 factory.printing.footer = "d";   //꼬릿말
+		 factory.printing.header = "";   //머릿말
+		 factory.printing.footer = "";   //꼬릿말
 		 factory.printing.portrait = false;  //false-가로, true-세로
-		 factory.printing.topMargin = 3.0;  //상 여백 설정
+		 factory.printing.topMargin = 1.0;  //상 여백 설정
 		 factory.printing.leftMargin = 1.0;  //좌 여백 설정
 		 factory.printing.rightMargin = 1.0;  //우 여백 설정
 		 factory.printing.bottomMargin = 1.0;  //하 여백 설정
@@ -107,150 +139,157 @@
 
 	}
 	
-
+	
 </script>
 </head>
 <body onload="fn_onload();" style="font-family: arial;">
 	<object id=factory style="display:none" classid="clsid:1663ed61-23eb-11d2-b92f-008048fdd814" codebase="http://www.meadroid.com/scriptx/ScriptX.cab#Version=6,1,429,14">
 	</object>
-	<div style="margin-left: 30px; font-weight: bold;">
-		<!-- 운송장번호 -->
-		<span style="font-size: 19px; margin-right: 15px; word-spacing: -3px;"><%=map.get("dlvrNumb").substring(0, 4) %> - <%=map.get("dlvrNumb").substring(4, 8) %> - <%=map.get("dlvrNumb").substring(8) %></span>
-		<!-- 출력일자 -->
-		<span style="font-size: 12px; margin-right: 35px;"><%=map.get("prtYmd") %></span>
-		<!-- 페이지카운트 -->
-		<span style="font-size: 10px;"><%=map.get("pageCnt") %></span>
+	
+	<div id="page1">
+		<div id="page_content"> 
+			<div style="margin-left: 30px; font-weight: bold;">
+				<!-- 운송장번호 -->
+				<span style="font-size: 19px; margin-right: 15px; word-spacing: -3px;"><%=map.get("dlvrNumb").substring(0, 4) %> - <%=map.get("dlvrNumb").substring(4, 8) %> - <%=map.get("dlvrNumb").substring(8) %></span>
+				<!-- 출력일자 -->
+				<span style="font-size: 12px; margin-right: 35px;"><%=map.get("prtYmd") %></span>
+				<!-- 페이지카운트 -->
+				<span style="font-size: 10px;"><%=map.get("pageCnt") %></span>
+			</div>
+			
+			<table style="margin-top: -10px; margin-left: -15px; font-weight: bold;">
+				<tr>
+					<td>
+						<!-- 도착지코드 바코드(CODE128A) -->
+						<svg id="code128A"></svg>
+					</td>
+					<td style="padding-top: 21px;">
+						<span style="font-size: 46px; border-bottom: 1px solid;">
+						<%=map.get("dlvClsfCd").substring(0, 1) %>
+						</span>
+					</td>
+					<td>
+						<span style="font-size: 75px;"><%=map.get("dlvClsfCd").substring(1, 4) %></span>
+					</td>
+					<td style="padding-top: 9px;">
+						<span style="font-size: 46px;">-</span>
+					</td>
+					<td style="padding-top: 21px;">
+						<span style="font-size: 46px;"><%=map.get("dlvSubClsfCd") %></span>
+					</td>
+				</tr>
+			</table>
+						
+			<table style="margin-top: -13px; font-weight: bold;">
+				<tr>
+					<td style="padding-right: 30px; font-size: 15px;"> 
+						<!-- 수화인 명 -->
+						<span><%=map.get("rcvrNm") %></span>
+					</td>
+					<td style="padding-right: 120px;  font-size: 15px;">
+						<!-- 수화인 연락처-->
+						<span><%=map.get("rcvrCell") %></span>
+					</td>
+					<td>
+						<!-- 운송장번호 바코드(CODE128C) -->
+						<svg id="code128C_NV"></svg>
+					</td>
+				</tr>
+			</table>	
+						
+			<table style="margin-top: -18px; font-weight: bold;">
+				<tr>
+					<td>
+						<!-- 수하인 주소 -->
+						<span style="font-size: 15px;"><%=map.get("rcvrNewAddr") %> <%=map.get("rcvrNewAddrDtl") %></span>
+					</td>
+				</tr>
+			</table>	
+						
+			<table style="margin-top: 10px; font-size: 32px; font-weight: bold;">
+				<tr>
+					<td>
+						<span><%=map.get("rcvrShortAddr") %></span>
+					</td>
+				</tr>
+			</table>	
+			
+						
+			<table style="margin-top: -10px; font-weight: bold;">
+				<tr>
+					<td style="padding-right: 40px; font-size: 11px;">
+						<span><%=map.get("sndprNm") %></span>
+					</td>
+					<td style="padding-right: 20px; font-size: 11px;">
+						<span><%=map.get("sndprCell") %></span>
+					</td>
+					<td style="padding-right: 60px;">
+						<span><%=map.get("param1") %></span>
+					</td>
+					<td style="padding-right: 25px;">
+						<span><%=map.get("param2") %></span>
+					</td>
+					<td>
+						<span><%=map.get("param3") %></span>
+					</td>
+				</tr>
+			</table>		
+						
+			<table style="margin-top: -10px; font-size: 11px; font-weight: bold;">
+				<tr>
+					<td>
+						<!-- 수하인 주소 -->
+						<span style="font-size: 11px;"><%=map.get("sndprNewAddr") %> <%=map.get("sndprNewAddrDtl") %></span>
+					</td>
+				</tr>
+			</table>		
+						
+			<table style="font-size: 11px; font-weight: bold; width: 300px; height: 140px;">
+				<tr>
+					<td style="height: 100%; vertical-align: top; text-align: left;">
+						<div id="divContainer" style="width: 270px; height: 100px; line-height: 15px; overflow:hidden;">
+							<span style="font-size: 11px;" id="divInner"><%=map.get("param4") %> </span>
+						</div>
+					</td>
+				</tr>
+			</table>		
+			
+			<table style="margin-top: -10px; font-size: 11px; font-weight: bold;">
+				<tr>
+					<td colspan="3">
+						<!-- 수하인 주소 -->
+						<span style="font-size: 11px;"><%=map.get("rcvrShortAddr") %></span>
+					</td>
+					<td rowspan="2" style="padding-bottom: 10px; padding-left: 20px;">
+						<svg id="code128C"></svg>
+					</td>
+				</tr>
+				<tr>
+					<td style="padding-right: 45px;">
+						<!-- 수하인 주소 -->
+						<span style="font-size: 18px;"><%=map.get("dlvPreArrBranNm") %>-<%=map.get("dlvPreArrEmpNm") %>-<%=map.get("dlvPreArrEmpNickNm") %></span>
+					</td>
+					<td style="padding-right: 25px;">
+						<span><%=map.get("param2") %></span>
+					</td>
+					<td>
+						<span><%=map.get("param3") %></span>
+					</td>
+				</tr>
+			</table>
+		
+		</div>
 	</div>
 	
-	<table style="margin-top: -10px; margin-left: -15px; font-weight: bold;">
-		<tr>
-			<td>
-				<!-- 도착지코드 바코드(CODE128A) -->
-				<svg id="code128A"></svg>
-			</td>
-			<td style="padding-top: 21px;">
-				<span style="font-size: 46px; border-bottom: 1px solid;">
-				<%=map.get("dlvClsfCd").substring(0, 1) %>
-				</span>
-			</td>
-			<td>
-				<span style="font-size: 75px;"><%=map.get("dlvClsfCd").substring(1, 4) %></span>
-			</td>
-			<td style="padding-top: 9px;">
-				<span style="font-size: 46px;">-</span>
-			</td>
-			<td style="padding-top: 21px;">
-				<span style="font-size: 46px;"><%=map.get("dlvSubClsfCd") %></span>
-			</td>
-		</tr>
-	</table>
-				
-	<table style="margin-top: -13px; font-weight: bold;">
-		<tr>
-			<td style="padding-right: 30px; font-size: 15px;"> 
-				<!-- 수화인 명 -->
-				<span><%=map.get("rcvrNm") %></span>
-			</td>
-			<td style="padding-right: 120px;  font-size: 15px;">
-				<!-- 수화인 연락처-->
-				<span><%=map.get("rcvrCell") %></span>
-			</td>
-			<td>
-				<!-- 운송장번호 바코드(CODE128C) -->
-				<svg id="code128C_NV"></svg>
-			</td>
-		</tr>
-	</table>	
-				
-	<table style="margin-top: -18px; font-weight: bold;">
-		<tr>
-			<td>
-				<!-- 수하인 주소 -->
-				<span style="font-size: 15px;"><%=map.get("rcvrNewAddr") %> <%=map.get("rcvrNewAddrDtl") %></span>
-			</td>
-		</tr>
-	</table>	
-				
-	<table style="margin-top: 10px; font-size: 32px; font-weight: bold;">
-		<tr>
-			<td>
-				<span><%=map.get("rcvrShortAddr") %></span>
-			</td>
-		</tr>
-	</table>	
-	
-				
-	<table style="margin-top: -10px; font-weight: bold;">
-		<tr>
-			<td style="padding-right: 40px; font-size: 11px;">
-				<span><%=map.get("sndprNm") %></span>
-			</td>
-			<td style="padding-right: 20px; font-size: 11px;">
-				<span><%=map.get("sndprCell") %></span>
-			</td>
-			<td style="padding-right: 60px;">
-				<span><%=map.get("param1") %></span>
-			</td>
-			<td style="padding-right: 25px;">
-				<span><%=map.get("param2") %></span>
-			</td>
-			<td>
-				<span><%=map.get("param3") %></span>
-			</td>
-		</tr>
-	</table>		
-				
-	<table style="margin-top: -10px; font-size: 11px; font-weight: bold;">
-		<tr>
-			<td>
-				<!-- 수하인 주소 -->
-				<span style="font-size: 11px;"><%=map.get("sndprNewAddr") %> <%=map.get("sndprNewAddrDtl") %></span>
-			</td>
-		</tr>
-	</table>		
-				
-	<table style="margin-top: -5px; margin-bottom: 100px; font-size: 11px; font-weight: bold;">
-		<tr>
-			<td>
-				<span style="font-size: 11px;"><%=map.get("param4") %> </span>
-			</td>
-		</tr>
-	</table>		
-	
-	<table style="margin-top: -10px; font-size: 11px; font-weight: bold;">
-		<tr>
-			<td colspan="3">
-				<!-- 수하인 주소 -->
-				<span style="font-size: 11px;"><%=map.get("rcvrShortAddr") %></span>
-			</td>
-			<td rowspan="2" style="padding-bottom: 10px; padding-left: 20px;">
-				<svg id="code128C"></svg>
-			</td>
-		</tr>
-		<tr>
-			<td style="padding-right: 45px;">
-				<!-- 수하인 주소 -->
-				<span style="font-size: 18px;"><%=map.get("dlvPreArrBranNm") %>-<%=map.get("dlvPreArrEmpNm") %>-<%=map.get("dlvPreArrEmpNickNm") %></span>
-			</td>
-			<td style="padding-right: 25px;">
-				<span><%=map.get("param2") %></span>
-			</td>
-			<td>
-				<span><%=map.get("param3") %></span>
-			</td>
-		</tr>
-	</table>
-				
-
-	<br><br>
-	
 	<!-- 다음페이지 출력 -->
-	<p style="page-break-before:always;">
+	<p id="nextPageStyleTag" style="page-break-before:always;">
 	</p>
 	
-	<div></div>
-	<div><%=request.getAttribute("prtDate") %></div>
-	<div><%=request.getAttribute("dlvClsfCd") %></div>
-	<div><%=map.get("dlvClsfCd")+"zzzz|||"+ map.get("test")%></div>
+	<!-- 2페이지 -->
+	<div id="page2" style="padding-top: 8px">
+		
+	</div>
+				
+	
 </body>
 </html>
