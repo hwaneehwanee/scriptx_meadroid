@@ -10,10 +10,11 @@
 <head>
 <meta charset="UTF-8">
 <title>인쇄 테스트</title>
-<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="./js/jquery.min.js"></script>
 <script src="./js/jsBarcode.code128.min.js"></script>
 <style>
-	#code128A{
+	
+	#code128A_NV{
 		width: 135px !important;
 		height: 75px !important;
 		float: left;
@@ -29,76 +30,87 @@
 		height: 75px !important;
 	}
 	
+	/* 바코드 흰색배경 제거 */
 	svg > rect {
 		display: none;
 	}
+	
+	
+	/* 도착지코드 첫자리 밑줄 */
+    .first_dlvClsfCd:after{
+    	content: "";
+        display: block;
+        border-bottom: 3px solid #bcbcbc;
+        margin-top: -8px;
+    } 
 	
 </style>
 <script type="text/javascript">
 	
 	function fn_onload()
 	{
-		/** 바코드생성*********************************************************************/
-		//도착지코드
-		JsBarcode(
-			"#code128A", 								//컴포넌트 id
-			'<%=map.get("dlvClsfCd") %>', 				//바코드생성 문자
-			{
-				format: "CODE128A", 					//생성형식
-				displayValue: false,					//문자출력여부
-				width: 3,
-				height: 100
-			}	
-		);
-		
-		//운송장번호
-		JsBarcode(
-			"#code128C_NV", 							//컴포넌트 id
-			'<%=map.get("dlvrNumb") %>', 				//바코드생성 문자
-			{
-				format: "CODE128C", 					//생성형식
-				displayValue: false,					//문자출력여부
-				width: 3,
-				height: 35
-			}	
-		);
-		
-		//운송장번호
-		JsBarcode(
-			"#code128C", 							//컴포넌트 id
-			'<%=map.get("dlvrNumb") %>', 				//바코드생성 문자
-			{
-				format: "CODE128C", 					//생성형식
-				width: 3,
-				height: 100,
-				fontOptions: "bold",
-				fontSize: 25
-			}	
-		);
-		
+		//바코드생성
+		fn_createBarcode();
 		
 		
 		//상품정보 overflow 체크.
-		if ($('#divInner').height() >  $('#divContainer').height()) {
+		if ($('#div_inner').height() >  $('#div_container').height()) {
 		    //console.log("OVERFLOW!!");
 		    
-		    var strText = $('#divInner').text();
-		    var str1 = strText.substring(0,(strText.length/2));
-		    var str2 = strText.substring((strText.length/2));
+		    var containerHeight = $('#div_container').height();
+		    var innerHeight = $('#div_inner').height();
 		    
-		  	//page1에 내용1 적용
-		    $("#page1 #divInner").html(str1);
+		    //상품정보
+		    var strText = $('#div_inner').text();
 		    
-		    //page1의 내용 page2에 복사
-		    $("#page1 #page_content").clone().appendTo("#page2");
+		    //총페이지수
+		    var totalPageCnt = Math.ceil(innerHeight/containerHeight);
+		    //한화면당 출력 텍스트 길이
+		    var eachPageTextLength = (strText.length/totalPageCnt);
 		    
-		    //page2에 내용2 적용
-		    $("#page2 #divInner").html(str2);
-		}else{
-			
-			//2페이지 출력 태그스타일 제거
-			$('#nextPageStyleTag').remove();
-			
+		    
+		    for(var i=0; i<totalPageCnt; i++){
+		    	
+		    	var strTestRst = "";
+		    	
+		    	if( i == 0 ){
+		    		strTestRst = strText.substring( 0, (eachPageTextLength)*(i+1));
+		    		
+		    		//page1에 상품정보 적용
+				    $('#page1 #div_inner').html(strTestRst);
+		    		
+		    		//페이지 카운트
+		    		$('#page1 #page_cnt').html( (i+1)+"/"+totalPageCnt );
+		    	}
+		    	//마지막내용인경우 인덱스이하 모두출력
+		    	else if( (i-1) == totalPageCnt){
+		    		strTestRst = strText.substring( (eachPageTextLength)*i );
+		    	}
+		    	else{
+		    		strTestRst = strText.substring( (eachPageTextLength)*i, (eachPageTextLength)*(i+1));
+		    	}
+		    	
+		    	//2page이상인 경우만 아래 스크립트 실행
+		    	if(i<1) continue; 
+		    	
+		    	var strHtml = '';
+		    	strHtml += '<p id="next_page_style_tag"'+i+' style="page-break-before:always;">';			//다음페이지출력 스타일태그.
+		    	strHtml += '</p>';
+		    	strHtml += '<div id="page'+(i+1)+'" style="padding-top: 8px">';
+		    	strHtml += '</div>';
+		    	
+		    	$('#div_more').append(strHtml);
+		    	
+		    	//page1의 테이블 복사
+		    	$('#page1 #page_content').clone().appendTo('#page'+(i+1));
+		    	
+		    	//상품정보 적용
+		    	$('#page'+(i+1)+' #div_inner').html(strTestRst);
+		    	
+		    	//페이지 카운트
+	    		$('#page'+(i+1)+' #page_cnt').html( (i+1)+"/"+totalPageCnt );
+		    }
+		    
 		}
 		
 		
@@ -107,6 +119,53 @@
 	}
 	
 	
+	/**
+	 * JSBarcode를 이용한 바코드생성
+	 */
+	function fn_createBarcode()
+	{
+		//도착지코드
+		JsBarcode(
+			"#code128A_NV", 														//컴포넌트 id
+			'<% if( map != null){ %><%=map.get("dlvClsfCd") %><%}%>', 				//바코드생성 문자
+			{
+				format: "CODE128A", 												//생성형식
+				displayValue: false,												//문자출력여부
+				width: 3,
+				height: 100
+			}	
+		);
+		
+		//운송장번호
+		JsBarcode(
+			"#code128C_NV", 														//컴포넌트 id
+			'<% if( map != null){ %><%=map.get("dlvrNumb") %><%}%>', 				//바코드생성 문자
+			{
+				format: "CODE128C", 												//생성형식
+				displayValue: false,												//문자출력여부
+				width: 3,
+				height: 65
+			}	
+		);
+		
+		//운송장번호
+		JsBarcode(
+			"#code128C", 							//컴포넌트 id
+			'<% if( map != null){ %><%=map.get("dlvrNumb") %><%}%>', 				//바코드생성 문자
+			{
+				format: "CODE128C", 					//생성형식
+				width: 3,
+				height: 100,
+				fontOptions: "bold",
+				fontSize: 25
+			}	
+		);
+	}
+	
+	
+	/**
+	 * 출력하기
+	 */
 	function printPage() 
 	{
 	
@@ -143,39 +202,52 @@
 </script>
 </head>
 <body onload="fn_onload();" style="font-family: arial;">
-	<object id=factory style="display:none" classid="clsid:1663ed61-23eb-11d2-b92f-008048fdd814" codebase="http://www.meadroid.com/scriptx/ScriptX.cab#Version=6,1,429,14">
+	<object id="factory" style="display:none" classid="clsid:1663ed61-23eb-11d2-b92f-008048fdd814" codebase="http://www.meadroid.com/scriptx/ScriptX.cab#Version=6,1,429,14">
 	</object>
 	
 	<div id="page1">
 		<div id="page_content"> 
 			<div style="margin-left: 30px; font-weight: bold;">
 				<!-- 운송장번호 -->
-				<span style="font-size: 19px; margin-right: 15px; word-spacing: -3px;"><%=map.get("dlvrNumb").substring(0, 4) %> - <%=map.get("dlvrNumb").substring(4, 8) %> - <%=map.get("dlvrNumb").substring(8) %></span>
+				<span style="font-size: 19px; margin-right: 15px; word-spacing: -3px;">
+					<% if( map != null){ %><%=map.get("dlvrNumb").substring(0, 4) %> - <%=map.get("dlvrNumb").substring(4, 8) %> - <%=map.get("dlvrNumb").substring(8) %><%}%>
+				</span>
 				<!-- 출력일자 -->
-				<span style="font-size: 12px; margin-right: 35px;"><%=map.get("prtYmd") %></span>
+				<span style="font-size: 12px; margin-right: 35px;">
+					<% if( map != null){ %><%=map.get("prtYmd") %><%}%>
+				</span>
 				<!-- 페이지카운트 -->
-				<span style="font-size: 10px;"><%=map.get("pageCnt") %></span>
+				<span id="page_cnt" style="font-size: 10px;">
+					1/1
+				</span>
 			</div>
 			
 			<table style="margin-top: -10px; margin-left: -15px; font-weight: bold;">
 				<tr>
 					<td>
 						<!-- 도착지코드 바코드(CODE128A) -->
-						<svg id="code128A"></svg>
+						<svg id="code128A_NV"></svg>
 					</td>
 					<td style="padding-top: 21px;">
-						<span style="font-size: 46px; border-bottom: 1px solid;">
-						<%=map.get("dlvClsfCd").substring(0, 1) %>
+						<!-- 도착지코드 첫자리 -->
+						<span class="first_dlvClsfCd" style="font-size: 46px; padding-bottom: 3px; ">
+							<% if( map != null){ %><%=map.get("dlvClsfCd").substring(0, 1) %><%}%>
 						</span>
 					</td>
 					<td>
-						<span style="font-size: 75px;"><%=map.get("dlvClsfCd").substring(1, 4) %></span>
+						<!-- 도착지코드 나머지 -->
+						<span style="font-size: 75px;">
+							<% if( map != null){ %><%=map.get("dlvClsfCd").substring(1, 4) %><%}%>
+						</span>
 					</td>
 					<td style="padding-top: 9px;">
 						<span style="font-size: 46px;">-</span>
 					</td>
 					<td style="padding-top: 21px;">
-						<span style="font-size: 46px;"><%=map.get("dlvSubClsfCd") %></span>
+						<!-- 도착지서브코드 -->
+						<span style="font-size: 46px;">
+							<% if( map != null){ %><%=map.get("dlvSubClsfCd") %><%}%>
+						</span>
 					</td>
 				</tr>
 			</table>
@@ -183,12 +255,16 @@
 			<table style="margin-top: -13px; font-weight: bold;">
 				<tr>
 					<td style="padding-right: 30px; font-size: 15px;"> 
-						<!-- 수화인 명 -->
-						<span><%=map.get("rcvrNm") %></span>
+						<!-- 받는분 명 -->
+						<span>
+							<% if( map != null){ %><%=map.get("rcvrNm") %><%}%>
+						</span>
 					</td>
 					<td style="padding-right: 120px;  font-size: 15px;">
-						<!-- 수화인 연락처-->
-						<span><%=map.get("rcvrCell") %></span>
+						<!-- 받는분 연락처-->
+						<span>
+							<% if( map != null){ %><%=map.get("rcvrCell") %><%}%>
+						</span>
 					</td>
 					<td>
 						<!-- 운송장번호 바코드(CODE128C) -->
@@ -200,8 +276,10 @@
 			<table style="margin-top: -18px; font-weight: bold;">
 				<tr>
 					<td>
-						<!-- 수하인 주소 -->
-						<span style="font-size: 15px;"><%=map.get("rcvrNewAddr") %> <%=map.get("rcvrNewAddrDtl") %></span>
+						<!-- 받는분 주소 -->
+						<span style="font-size: 15px;">
+							<% if( map != null){ %><%=map.get("rcvrNewAddr") %> <%=map.get("rcvrNewAddrDtl") %><%}%>
+						</span>
 					</td>
 				</tr>
 			</table>	
@@ -209,7 +287,10 @@
 			<table style="margin-top: 10px; font-size: 32px; font-weight: bold;">
 				<tr>
 					<td>
-						<span><%=map.get("rcvrShortAddr") %></span>
+						<!-- 받는분 주소약칭 -->
+						<span>
+							<% if( map != null){ %><%=map.get("rcvrShortAddr") %><%}%>
+						</span>
 					</td>
 				</tr>
 			</table>	
@@ -218,19 +299,34 @@
 			<table style="margin-top: -10px; font-weight: bold;">
 				<tr>
 					<td style="padding-right: 40px; font-size: 11px;">
-						<span><%=map.get("sndprNm") %></span>
+						<!-- 보내는분 명 -->
+						<span>
+							<% if( map != null){ %><%=map.get("sndprNm") %><%}%>
+						</span>
 					</td>
 					<td style="padding-right: 20px; font-size: 11px;">
-						<span><%=map.get("sndprCell") %></span>
+						<!-- 보내는분 명 -->
+						<span>
+							<% if( map != null){ %><%=map.get("sndprCell") %><%}%>
+						</span>
 					</td>
 					<td style="padding-right: 60px;">
-						<span><%=map.get("param1") %></span>
+						<!-- 수량 -->
+						<span>
+							<% if( map != null){ %><%=map.get("param1") %><%}%>
+						</span>
 					</td>
 					<td style="padding-right: 25px;">
-						<span><%=map.get("param2") %></span>
+						<!-- 운임 -->
+						<span>
+							<% if( map != null){ %><%=map.get("param2") %><%}%>
+						</span>
 					</td>
 					<td>
-						<span><%=map.get("param3") %></span>
+						<!-- 정산 -->
+						<span>
+							<% if( map != null){ %><%=map.get("param3") %><%}%>
+						</span>
 					</td>
 				</tr>
 			</table>		
@@ -238,42 +334,65 @@
 			<table style="margin-top: -10px; font-size: 11px; font-weight: bold;">
 				<tr>
 					<td>
-						<!-- 수하인 주소 -->
-						<span style="font-size: 11px;"><%=map.get("sndprNewAddr") %> <%=map.get("sndprNewAddrDtl") %></span>
+						<!-- 보내는분 주소 -->
+						<span style="font-size: 11px;">
+							<% if( map != null){ %><%=map.get("sndprNewAddr") %> <%=map.get("sndprNewAddrDtl") %><%}%>
+						</span>
 					</td>
 				</tr>
-			</table>		
-						
-			<table style="font-size: 11px; font-weight: bold; width: 300px; height: 140px;">
+			</table>	
+				
+			<table style="font-size: 11px; font-weight: bold; width: 300px; height: 140px; display: inline-block">
 				<tr>
 					<td style="height: 100%; vertical-align: top; text-align: left;">
-						<div id="divContainer" style="width: 270px; height: 100px; line-height: 15px; overflow:hidden;">
-							<span style="font-size: 11px;" id="divInner"><%=map.get("param4") %> </span>
+						<!-- 상품정보 -->
+						<div id="div_container" style="width: 270px; height: 100px; line-height: 15px; overflow:hidden;">
+							<span style="font-size: 11px;" id="div_inner">
+								<% if( map != null){ %><%=map.get("param4") %> <%}%>
+							</span>
 						</div>
 					</td>
 				</tr>
-			</table>		
+			</table>
+			
+			<div style="display: inline-block; vertical-align: top; margin-top: 95px;">
+				<!-- 기타 -->
+				<span style="font-size: 11px; font-weight: bold;"> 
+					<% if( map != null){ %><%=map.get("param5") %><%}%>
+				</span>
+			</div>
 			
 			<table style="margin-top: -10px; font-size: 11px; font-weight: bold;">
 				<tr>
 					<td colspan="3">
-						<!-- 수하인 주소 -->
-						<span style="font-size: 11px;"><%=map.get("rcvrShortAddr") %></span>
+						<!-- 받는분 주소약칭 -->
+						<span style="font-size: 11px;">
+							<% if( map != null){ %><%=map.get("rcvrShortAddr") %><%}%>
+						</span>
 					</td>
 					<td rowspan="2" style="padding-bottom: 10px; padding-left: 20px;">
+						<!-- 운송장번호 바코드 -->
 						<svg id="code128C"></svg>
 					</td>
 				</tr>
 				<tr>
 					<td style="padding-right: 45px;">
-						<!-- 수하인 주소 -->
-						<span style="font-size: 18px;"><%=map.get("dlvPreArrBranNm") %>-<%=map.get("dlvPreArrEmpNm") %>-<%=map.get("dlvPreArrEmpNickNm") %></span>
+						<!-- 배송집배점명 + 배송SM명 + 분류코드명 -->
+						<span style="font-size: 18px;">
+							<% if( map != null){ %><%=map.get("dlvPreArrBranNm") %>-<%=map.get("dlvPreArrEmpNm") %>-<%=map.get("dlvPreArrEmpNickNm") %><%}%>
+						</span>
 					</td>
 					<td style="padding-right: 25px;">
-						<span><%=map.get("param2") %></span>
+						<!-- 운임 -->
+						<span>
+							<% if( map != null){ %><%=map.get("param2") %><%}%>
+						</span>
 					</td>
 					<td>
-						<span><%=map.get("param3") %></span>
+						<!-- 정산 -->
+						<span>
+							<% if( map != null){ %><%=map.get("param3") %><%}%>
+						</span>
 					</td>
 				</tr>
 			</table>
@@ -281,15 +400,8 @@
 		</div>
 	</div>
 	
-	<!-- 다음페이지 출력 -->
-	<p id="nextPageStyleTag" style="page-break-before:always;">
-	</p>
+	<div id="div_more"></div>
 	
-	<!-- 2페이지 -->
-	<div id="page2" style="padding-top: 8px">
-		
-	</div>
-				
 	
 </body>
 </html>

@@ -67,6 +67,9 @@ public class KeepingBoxBean  {
 		//상품정보
 		map.put("param4", 				properties.getProperty("param4"));
 		
+		//기타
+		map.put("param5", 				properties.getProperty("param5"));
+		
 		//배송집배점명
 		map.put("dlvPreArrBranNm", 		properties.getProperty("dlvPreArrBranNm"));
 		//배송SM명
