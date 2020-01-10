@@ -30,8 +30,6 @@ public class KeepingBoxBean  {
 		SimpleDateFormat format1 = new SimpleDateFormat("yyyy.MM.dd");
 		String prtYmd = format1.format (System.currentTimeMillis());
 		map.put("prtYmd", 				prtYmd);
-		//페이지카운트
-		map.put("pageCnt", 				"1/1");
 		//도착지코드
 		map.put("dlvClsfCd", 			properties.getProperty("dlvClsfCd"));
 		//도착지서브코드
@@ -67,7 +65,7 @@ public class KeepingBoxBean  {
 		//상품정보
 		map.put("param4", 				properties.getProperty("param4"));
 		
-		//기타
+		//기타(국내택배)
 		map.put("param5", 				properties.getProperty("param5"));
 		
 		//배송집배점명

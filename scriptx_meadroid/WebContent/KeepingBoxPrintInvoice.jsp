@@ -40,9 +40,20 @@
     .first_dlvClsfCd:after{
     	content: "";
         display: block;
-        border-bottom: 3px solid #bcbcbc;
+        border-bottom: 1px solid;
         margin-top: -8px;
     } 
+    
+    
+    /* 프린터시 처리 스타일 */
+    @media print{
+    	
+    	.no-print{
+    		display: none !important;
+    	}
+    
+    }
+    
 	
 </style>
 <script type="text/javascript">
@@ -80,7 +91,7 @@
 				    $('#page1 #div_inner').html(strTestRst);
 		    		
 		    		//페이지 카운트
-		    		$('#page1 #page_cnt').html( (i+1)+"/"+totalPageCnt );
+		    		$('#page1 #page_cnt').html( (i+1)+"/ "+totalPageCnt );
 		    	}
 		    	//마지막내용인경우 인덱스이하 모두출력
 		    	else if( (i-1) == totalPageCnt){
@@ -108,7 +119,7 @@
 		    	$('#page'+(i+1)+' #div_inner').html(strTestRst);
 		    	
 		    	//페이지 카운트
-	    		$('#page'+(i+1)+' #page_cnt').html( (i+1)+"/"+totalPageCnt );
+	    		$('#page'+(i+1)+' #page_cnt').html( (i+1)+"/ "+totalPageCnt );
 		    }
 		    
 		}
@@ -178,14 +189,14 @@
 		 factory.printing.rightMargin = 1.0;  //우 여백 설정
 		 factory.printing.bottomMargin = 1.0;  //하 여백 설정
 		 
-		  //factory.printing.Print(true);   //인쇄, 다이얼로그 창 등장 true, false
+		 
+		 //factory.printing.Print(false);   //인쇄, 다이얼로그 창 등장 true, false
 	
-		  //미리보기실행
-		  factory.printing.Preview();
+		 //미리보기실행
+		 factory.printing.Preview();
 		 
-		 
-		  //웹브라우져 닫기
-		  //window.open('about:blank', '_self').close();
+		 //웹브라우져 닫기
+		 //window.open('about:blank', '_self').close();
 		  
 		  //유료기능  
 		  //factory.printing.paperSize = "A4";      // 용지 사이즈
@@ -199,10 +210,25 @@
 	}
 	
 	
+	/**
+	 * Active X 설치 페이지
+	 */
+	function fn_installActiveX()
+	{
+		window.open('http://scriptx.meadroid.com/download/install-scriptx.aspx');
+	}
+	
+	
 </script>
 </head>
 <body onload="fn_onload();" style="font-family: arial;">
-	<object id="factory" style="display:none" classid="clsid:1663ed61-23eb-11d2-b92f-008048fdd814" codebase="http://www.meadroid.com/scriptx/ScriptX.cab#Version=6,1,429,14">
+	<div class="no-print">
+		<a href="#" onclick="fn_installActiveX()">ACTIVE X설치가 안되는 경우 클릭</a>
+		<br><br><br>
+	</div>
+	
+	
+	<object id="factory" style="display:none" classid="clsid:1663ed61-23eb-11d2-b92f-008048fdd814" codebase="http://localhost:8080/_plugin/smsx.cab#Version=6,1,429,14">
 	</object>
 	
 	<div id="page1">
@@ -218,7 +244,7 @@
 				</span>
 				<!-- 페이지카운트 -->
 				<span id="page_cnt" style="font-size: 10px;">
-					1/1
+					1/ 1
 				</span>
 			</div>
 			
@@ -252,7 +278,7 @@
 				</tr>
 			</table>
 						
-			<table style="margin-top: -13px; font-weight: bold;">
+			<table style="margin-top: -19px; font-weight: bold;">
 				<tr>
 					<td style="padding-right: 30px; font-size: 15px;"> 
 						<!-- 받는분 명 -->
@@ -273,9 +299,9 @@
 				</tr>
 			</table>	
 						
-			<table style="margin-top: -18px; font-weight: bold;">
+			<table style="margin-top: -16px; font-weight: bold; width: 457px; height: 46px;">
 				<tr>
-					<td>
+					<td style="vertical-align: top; text-align: left;">
 						<!-- 받는분 주소 -->
 						<span style="font-size: 15px;">
 							<% if( map != null){ %><%=map.get("rcvrNewAddr") %> <%=map.get("rcvrNewAddrDtl") %><%}%>
@@ -284,7 +310,7 @@
 				</tr>
 			</table>	
 						
-			<table style="margin-top: 10px; font-size: 32px; font-weight: bold;">
+			<table style="margin-top: -10px; font-size: 32px; font-weight: bold;">
 				<tr>
 					<td>
 						<!-- 받는분 주소약칭 -->
