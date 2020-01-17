@@ -8,7 +8,7 @@
 </head>
 <body>
 	<%
-		pageContext.forward("KeepingBoxPrintInvoice.jsp");
+		pageContext.forward("KeepingBoxPrintInvoice_U.jsp");
 	
 	%>
 </body>

@@ -16,7 +16,7 @@
 	
 	#code128A_NV{
 		width: 135px !important;
-		height: 75px !important;
+		height: 85px !important;
 		float: left;
 	}
 	
@@ -105,9 +105,9 @@
 		    	if(i<1) continue; 
 		    	
 		    	var strHtml = '';
-		    	strHtml += '<p id="next_page_style_tag"'+i+' style="page-break-before:always;">';			//다음페이지출력 스타일태그.
-		    	strHtml += '</p>';
-		    	strHtml += '<div id="page'+(i+1)+'" style="padding-top: 8px">';
+		    	/* strHtml += '<p id="next_page_style_tag"'+i+' style="page-break-before:always;">';			//다음페이지출력 스타일태그.
+		    	strHtml += '</p>'; */
+		    	strHtml += '<div id="page'+(i+1)+'">';
 		    	strHtml += '</div>';
 		    	
 		    	$('#div_more').append(strHtml);
@@ -143,7 +143,7 @@
 				format: "CODE128A", 												//생성형식
 				displayValue: false,												//문자출력여부
 				width: 3,
-				height: 100
+				height: 115
 			}	
 		);
 		
@@ -155,7 +155,7 @@
 				format: "CODE128C", 												//생성형식
 				displayValue: false,												//문자출력여부
 				width: 3,
-				height: 65
+				height: 45
 			}	
 		);
 		
@@ -166,9 +166,9 @@
 			{
 				format: "CODE128C", 					//생성형식
 				width: 3,
-				height: 100,
+				height: 75,
 				fontOptions: "bold",
-				fontSize: 25
+				fontSize: 20
 			}	
 		);
 	}
@@ -184,10 +184,10 @@
 		 factory.printing.header = "";   //머릿말
 		 factory.printing.footer = "";   //꼬릿말
 		 factory.printing.portrait = false;  //false-가로, true-세로
-		 factory.printing.topMargin = 1.0;  //상 여백 설정
-		 factory.printing.leftMargin = 1.0;  //좌 여백 설정
-		 factory.printing.rightMargin = 1.0;  //우 여백 설정
-		 factory.printing.bottomMargin = 1.0;  //하 여백 설정
+		 factory.printing.topMargin = 2.5;  //상 여백 설정
+		 factory.printing.leftMargin = 4.0;  //좌 여백 설정
+		 factory.printing.rightMargin = 29.0;  //우 여백 설정
+		 factory.printing.bottomMargin = 0.0;  //하 여백 설정
 		 
 		 
 		 //factory.printing.Print(false);   //인쇄, 다이얼로그 창 등장 true, false
@@ -196,16 +196,8 @@
 		 factory.printing.Preview();
 		 
 		 //웹브라우져 닫기
-		 //window.open('about:blank', '_self').close();
+		 window.open('about:blank', '_self').close();
 		  
-		  //유료기능  
-		  //factory.printing.paperSize = "A4";      // 용지 사이즈
-		  //factory.printing.paperSource = "Manual feed";   // 종이 Feed 방식
-		  //factory.printing.copies = 1; // 인쇄할 매수
-		  //factory.printing.SetPageRange(false, 1, 3); // True로 설정하고 1, 3이면 1페이지에서 3페이지까지 출력
-		  // factory.printing.printBackground = false; // 백그라운드까지 출력  
-		  //factory.printing.SetMarginMeasure(2); // 테두리 여백 사이즈 단위를 인치로 설정합니다.
-		  //factory.printing.printer = "SINDORICOH LP-1800";  // 프린트 할 프린터 이름 -->신도리코
 
 	}
 	
@@ -221,19 +213,19 @@
 	
 </script>
 </head>
-<body onload="fn_onload();" style="font-family: arial;">
-	<div class="no-print">
+<body onload="fn_onload();" style="font-family: arial; margin-top: 0px;">
+	<!-- <div class="no-print">
 		<a href="#" onclick="fn_installActiveX()">ACTIVE X설치가 안되는 경우 클릭</a>
 		<br><br><br>
 	</div>
-	
+	 -->
 	
 	<object id="factory" style="display:none" classid="clsid:1663ed61-23eb-11d2-b92f-008048fdd814" codebase="http://localhost:8080/_plugin/smsx.cab#Version=6,1,429,14">
 	</object>
 	
 	<div id="page1">
 		<div id="page_content"> 
-			<div style="margin-left: 30px; font-weight: bold;">
+			<div style=" margin-left: 30px; font-weight: bold;">
 				<!-- 운송장번호 -->
 				<span style="font-size: 19px; margin-right: 15px; word-spacing: -3px;">
 					<% if( map != null){ %><%=map.get("dlvrNumb").substring(0, 4) %> - <%=map.get("dlvrNumb").substring(4, 8) %> - <%=map.get("dlvrNumb").substring(8) %><%}%>
@@ -254,7 +246,7 @@
 						<!-- 도착지코드 바코드(CODE128A) -->
 						<svg id="code128A_NV"></svg>
 					</td>
-					<td style="padding-top: 21px;">
+					<td style="padding-top: 17px;">
 						<!-- 도착지코드 첫자리 -->
 						<span class="first_dlvClsfCd" style="font-size: 46px; padding-bottom: 3px; ">
 							<% if( map != null){ %><%=map.get("dlvClsfCd").substring(0, 1) %><%}%>
@@ -278,15 +270,15 @@
 				</tr>
 			</table>
 						
-			<table style="margin-top: -19px; font-weight: bold;">
+			<table style="margin-top: -25px; margin-left: 5px; font-weight: bold;">
 				<tr>
-					<td style="padding-right: 30px; font-size: 15px;"> 
+					<td style="padding-right: 30px; font-size: 14px; width:50px;"> 
 						<!-- 받는분 명 -->
 						<span>
 							<% if( map != null){ %><%=map.get("rcvrNm") %><%}%>
 						</span>
 					</td>
-					<td style="padding-right: 120px;  font-size: 15px;">
+					<td style="padding-right: 88px;  font-size: 14px; width: 88px">
 						<!-- 받는분 연락처-->
 						<span>
 							<% if( map != null){ %><%=map.get("rcvrCell") %><%}%>
@@ -299,18 +291,18 @@
 				</tr>
 			</table>	
 						
-			<table style="margin-top: -16px; font-weight: bold; width: 457px; height: 46px;">
+			<table style="margin-top: -18px; margin-left: 5px; font-weight: bold; width: 442px; height: 46px; line-height: 13px;">
 				<tr>
 					<td style="vertical-align: top; text-align: left;">
 						<!-- 받는분 주소 -->
-						<span style="font-size: 15px;">
+						<span style="font-size: 13px;">
 							<% if( map != null){ %><%=map.get("rcvrNewAddr") %> <%=map.get("rcvrNewAddrDtl") %><%}%>
 						</span>
 					</td>
 				</tr>
 			</table>	
 						
-			<table style="margin-top: -10px; font-size: 32px; font-weight: bold;">
+			<table style="margin-top: -22px; margin-left: 5px; font-size: 32px; font-weight: bold;">
 				<tr>
 					<td>
 						<!-- 받는분 주소약칭 -->
@@ -322,7 +314,7 @@
 			</table>	
 			
 						
-			<table style="margin-top: -10px; font-weight: bold;">
+			<table style=" margin-left: 5px; font-weight: bold;">
 				<tr>
 					<td style="padding-right: 40px; font-size: 11px;">
 						<!-- 보내는분 명 -->
@@ -330,25 +322,25 @@
 							<% if( map != null){ %><%=map.get("sndprNm") %><%}%>
 						</span>
 					</td>
-					<td style="padding-right: 20px; font-size: 11px;">
-						<!-- 보내는분 명 -->
+					<td style="padding-right: 45px; font-size: 11px;">
+						<!-- 보내는분 전화-->
 						<span>
 							<% if( map != null){ %><%=map.get("sndprCell") %><%}%>
 						</span>
 					</td>
-					<td style="padding-right: 60px;">
+					<td style="padding-right: 80px; font-size: 11px;">
 						<!-- 수량 -->
 						<span>
 							<% if( map != null){ %><%=map.get("param1") %><%}%>
 						</span>
 					</td>
-					<td style="padding-right: 25px;">
+					<td style="padding-right: 40px; font-size: 11px;">
 						<!-- 운임 -->
 						<span>
 							<% if( map != null){ %><%=map.get("param2") %><%}%>
 						</span>
 					</td>
-					<td>
+					<td style="font-size: 11px;">
 						<!-- 정산 -->
 						<span>
 							<% if( map != null){ %><%=map.get("param3") %><%}%>
@@ -357,7 +349,7 @@
 				</tr>
 			</table>		
 						
-			<table style="margin-top: -10px; font-size: 11px; font-weight: bold;">
+			<table style="margin-top: -8px; margin-left: 3px; font-size: 11px; font-weight: bold;">
 				<tr>
 					<td>
 						<!-- 보내는분 주소 -->
@@ -368,11 +360,11 @@
 				</tr>
 			</table>	
 				
-			<table style="font-size: 11px; font-weight: bold; width: 300px; height: 140px; display: inline-block">
+			<table style="margin-left: -10px; font-size: 11px; font-weight: bold; width: 446px; height: 100px;">
 				<tr>
 					<td style="height: 100%; vertical-align: top; text-align: left;">
 						<!-- 상품정보 -->
-						<div id="div_container" style="width: 270px; height: 100px; line-height: 15px; overflow:hidden;">
+						<div id="div_container" style="height: 100px; line-height: 15px; overflow:hidden;">
 							<span style="font-size: 11px;" id="div_inner">
 								<% if( map != null){ %><%=map.get("param4") %> <%}%>
 							</span>
@@ -380,43 +372,43 @@
 					</td>
 				</tr>
 			</table>
-			
-			<div style="display: inline-block; vertical-align: top; margin-top: 95px;">
-				<!-- 기타 -->
+			<!-- 
+			<div style="margin-top: -10px; width: 446px; text-align: right; margin-left: -85px;">
+				
 				<span style="font-size: 11px; font-weight: bold;"> 
 					<% if( map != null){ %><%=map.get("param5") %><%}%>
 				</span>
 			</div>
-			
-			<table style="margin-top: -10px; font-size: 11px; font-weight: bold;">
+			 -->
+			<table style="margin-top: -8px; margin-left: -14px; font-size: 11px; font-weight: bold; table-layout: fixed;">
 				<tr>
-					<td colspan="3">
+					<td colspan="3" style="padding-top: 8px;" valign="bottom">
 						<!-- 받는분 주소약칭 -->
 						<span style="font-size: 11px;">
 							<% if( map != null){ %><%=map.get("rcvrShortAddr") %><%}%>
 						</span>
 					</td>
-					<td rowspan="2" style="padding-bottom: 10px; padding-left: 20px;">
+					<td rowspan="2" style="padding-left: 20px;" valign="bottom">
 						<!-- 운송장번호 바코드 -->
 						<svg id="code128C"></svg>
 					</td>
 				</tr>
 				<tr>
-					<td style="padding-right: 45px;">
+					<td style=" width: 155px; overflow: hidden; font-size: 16px; white-space: nowrap;">
+						<div style="width: 155px; ">
 						<!-- 배송집배점명 + 배송SM명 + 분류코드명 -->
-						<span style="font-size: 18px;">
-							<% if( map != null){ %><%=map.get("dlvPreArrBranNm") %>-<%=map.get("dlvPreArrEmpNm") %>-<%=map.get("dlvPreArrEmpNickNm") %><%}%>
-						</span>
+						<% if( map != null){ %><%=map.get("dlvPreArrBranNm") %>-<%=map.get("dlvPreArrEmpNm") %>-<%=map.get("dlvPreArrEmpNickNm") %><%}%>
+						</div>
 					</td>
-					<td style="padding-right: 25px;">
+					<td style="padding-left: 50px; padding-right: 30px; ">
 						<!-- 운임 -->
 						<span>
 							<% if( map != null){ %><%=map.get("param2") %><%}%>
 						</span>
 					</td>
-					<td>
+					<td style="">
 						<!-- 정산 -->
-						<span>
+						<span >
 							<% if( map != null){ %><%=map.get("param3") %><%}%>
 						</span>
 					</td>

@@ -80,6 +80,13 @@ public class KeepingBoxBean  {
 		req.setAttribute("INVOICE_INFO", map);
 	}
 	
+	
+	
+	//null체크 함수
+		public String isNull(String str) 
+		{
+			return str == null? "":str;
+		}
 }
 
 

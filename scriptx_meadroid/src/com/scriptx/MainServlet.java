@@ -17,11 +17,11 @@ public class MainServlet extends HttpServlet {
 
 			//출력데이터조회
     		new KeepingBoxBean().printInvoiceDefault(req);
-			
+			 
 	        
 	    	//print페이지로 포워딩
 	        req.getRequestDispatcher("KeepingBoxPrintInvoice.jsp").forward(req, resp);
-			
+			 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
